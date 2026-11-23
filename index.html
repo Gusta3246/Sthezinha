@@ -111,6 +111,7 @@ background:radial-gradient(ellipse at 50% 40%,#3D1640 0%,var(--noite) 70%);trans
 .abertura.some{opacity:0;pointer-events:none}
 @keyframes entra{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:720px){.palco,.tela{overflow:visible;border-radius:0;box-shadow:none}.tela{position:relative}}
 </style>
 </head>
 <body>
@@ -341,7 +342,8 @@ function usarIframe(f){
   i.allow="autoplay; fullscreen";i.allowFullscreen=true;i.title=f.titulo;
   tela.append(i);
   if(matchMedia("(max-width:720px)").matches){
-    const W=640,H=360,k=tela.clientWidth/W;
+    const W=640,H=520,k=tela.clientWidth/W;
+    tela.style.aspectRatio="auto";tela.style.height=Math.round(k*H)+"px";
     i.style.cssText="position:absolute;left:0;top:0;width:"+W+"px;height:"+H+"px;transform-origin:0 0;transform:scale("+k+")";
   }
 }
@@ -361,7 +363,7 @@ function mostrarFim(){
 function abrir(f){
   atual=f;terminou=false;
   $("pTitulo").textContent=f.titulo;
-  const tela=$("tela");tela.innerHTML="";video=null;
+  const tela=$("tela");tela.innerHTML="";tela.removeAttribute("style");video=null;
   $("fim").hidden=true;
   
   $("dlg").showModal();
