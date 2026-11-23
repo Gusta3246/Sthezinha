@@ -66,7 +66,7 @@ padding:clamp(24px,5vw,56px) clamp(16px,5vw,64px);background:radial-gradient(ell
 box-shadow:0 0 0 1px var(--borda),0 14px 34px rgba(0,0,0,.4)}
 .poster img{width:100%;height:100%;object-fit:cover}
 .sem{position:absolute;inset:0;display:grid;place-items:center;padding:14px;text-align:center;font-family:var(--serif);font-size:1.6rem;line-height:1.1}
-dialog{border:0;padding:0;background:transparent;color:var(--texto);width:min(1100px,94vw);max-width:none;margin:auto;overflow:visible}
+dialog{border:0;padding:12px 0 28px;background:transparent;color:var(--texto);width:min(1100px,94vw);max-width:none;max-height:100vh;max-height:100dvh;margin:auto;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 dialog::backdrop{background:rgba(14,4,16,.88);backdrop-filter:blur(6px)}
 .p-topo{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px}
 .p-topo h2{font-family:var(--serif);font-weight:400;font-size:1.9rem}
