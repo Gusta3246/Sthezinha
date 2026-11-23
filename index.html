@@ -11,7 +11,7 @@
 <title>Sthezinha Filmes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;400;600;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 :root{--noite:#1E0A21;--borda:rgba(251,239,244,.14);--rosa:#FF8FB1;--texto:#FBEFF4;--suave:#C9A6C4;
 --ui:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;--serif:"Instrument Serif",Georgia,serif}
@@ -54,7 +54,7 @@ padding:clamp(24px,5vw,56px) clamp(16px,5vw,64px) 84px;background:radial-gradien
 .eyebrow{font-size:.8rem;letter-spacing:.22em;font-weight:600;color:#FF8FB1}
 .centro-t{font-family:var(--serif);font-weight:400;font-size:clamp(2.8rem,7vw,5.4rem);line-height:.95}
 .meta{display:flex;gap:18px;color:#C9A6C4;font-weight:600}
-.sinopse{color:#E9D5E4;line-height:1.5;font-size:1.1rem}
+.sinopse{color:#E9D5E4;line-height:1.5;font-size:1.1rem;font-weight:300}
 .nota{padding-left:16px;border-left:3px solid #FF8FB1;font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,2vw,1.4rem);line-height:1.35;color:#F3DDE9}
 .btn{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:14px 32px;font-weight:700;font-size:1.05rem;background:#FF8FB1;color:#1E0A21;margin-top:6px}
 .btn svg{width:18px;height:18px;fill:currentColor}
@@ -76,6 +76,16 @@ padding:clamp(24px,5vw,56px) clamp(16px,5vw,64px) 84px;background:radial-gradien
 .bilhete{margin-top:16px;padding:6px 0 6px 16px;border-left:3px solid var(--rosa);font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35;color:#F3DDE9;max-width:60ch}
 dialog>.bilhete{display:none;margin-top:18px}
 @media(max-width:720px){dialog>.bilhete:not([hidden]){display:block}}
+a.fechar{display:inline-block;text-decoration:none;border:1px solid var(--borda);border-radius:999px;padding:9px 20px;font-weight:600;color:var(--texto)}
+a.fechar:hover{border-color:var(--rosa);color:var(--rosa)}
+@media(max-width:720px){
+dialog{width:100vw;padding:8px 0 20px}
+.p-topo{padding:0 14px 10px;flex-wrap:wrap}
+.p-topo h2{font-size:1.4rem}
+.palco{overflow:visible;border-radius:0;box-shadow:none}
+.tela{overflow:visible;border-radius:0;box-shadow:none}
+dialog>.bilhete:not([hidden]){margin:16px 14px 0}
+}
 .nota-rotulo{display:block;margin-bottom:6px;font-family:var(--ui);font-style:normal;font-size:.75rem;letter-spacing:.2em;font-weight:600;color:#FF8FB1}
 .vazio{color:#C9A6C4}
 @media(max-width:820px){.central{flex-direction:column-reverse;justify-content:flex-start}.texto{max-width:none}}
@@ -83,7 +93,7 @@ dialog>.bilhete{display:none;margin-top:18px}
 box-shadow:0 0 0 1px var(--borda),0 14px 34px rgba(0,0,0,.4)}
 .poster img{width:100%;height:100%;object-fit:cover}
 .sem{position:absolute;inset:0;display:grid;place-items:center;padding:14px;text-align:center;font-family:var(--serif);font-size:1.6rem;line-height:1.1}
-dialog{border:0;padding:12px 0 28px;background:transparent;color:var(--texto);width:min(1100px,94vw);max-width:none;max-height:100vh;max-height:100dvh;margin:auto;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+dialog{border:0;padding:12px 0 28px;background:transparent;color:var(--texto);width:min(1100px,94vw);max-width:none;max-height:100vh;max-height:100dvh;margin:auto;overflow-x:hidden;overflow-y:auto}
 dialog::backdrop{background:rgba(14,4,16,.88);backdrop-filter:blur(6px)}
 .p-topo{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px}
 .p-topo h2{font-family:var(--serif);font-weight:400;font-size:1.9rem}
@@ -125,6 +135,7 @@ background:radial-gradient(ellipse at 50% 40%,#3D1640 0%,var(--noite) 70%);trans
   <div class="p-topo">
     <h2 id="pTitulo"></h2>
     <div class="p-acoes">
+      <a class="fechar" id="abrirDrive" target="_blank" rel="noopener" href="#">Abrir no Drive</a>
       <button class="fechar" id="terminei" type="button">Terminei</button>
       <button class="fechar" id="fechar" type="button">Fechar</button>
     </div>
@@ -353,6 +364,7 @@ function mostrarFim(){
 function abrir(f){
   atual=f;terminou=false;
   $("pTitulo").textContent=f.titulo;
+  $("abrirDrive").href=f.driveId?"https://drive.google.com/file/d/"+encodeURIComponent(f.driveId)+"/view"+(f.chave?"?resourcekey="+encodeURIComponent(f.chave):""):"#";
   const bl=$("bilheteP");bl.hidden=!f.nota;bl.querySelector(".nota-rotulo").textContent=ROTULO_NOTA;$("bilheteT").textContent=f.nota||"";
   const tela=$("tela");tela.innerHTML="";video=null;
   $("fim").hidden=true;
