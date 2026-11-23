@@ -31,10 +31,24 @@ padding:14px clamp(16px,4vw,48px);background:rgba(30,10,33,.72);backdrop-filter:
 
 
 .central{position:relative;overflow:hidden;isolation:isolate;min-height:calc(100vh - 74px);display:flex;align-items:center;justify-content:center;gap:clamp(24px,5vw,64px);
-padding:clamp(24px,5vw,56px) clamp(16px,5vw,64px);background:radial-gradient(ellipse at 30% 30%,#4A1A4A 0%,#1E0A21 72%);color:#FBEFF4}
+padding:clamp(24px,5vw,56px) clamp(16px,5vw,64px) 84px;background:radial-gradient(ellipse at 30% 30%,#4A1A4A 0%,#1E0A21 72%);color:#FBEFF4}
 .fundo{position:absolute;inset:-80px;z-index:-2;background-size:cover;background-position:center;filter:blur(50px) saturate(1.3);opacity:.6;animation:aparece .8s ease both}
 .central::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(30,10,33,.25),rgba(30,10,33,.85))}
 @keyframes aparece{from{opacity:0}to{opacity:.6}}
+.fixa{position:fixed;top:50%;transform:translateY(-50%);z-index:15;background:rgba(30,10,33,.65);backdrop-filter:blur(6px);transition:opacity .25s}
+.fixa.esq{left:clamp(8px,2vw,28px)}.fixa.dir{right:clamp(8px,2vw,28px)}
+.no-hero .fixa{opacity:0;pointer-events:none}
+.rolar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;color:#C9A6C4;font-weight:600;font-size:.9rem;padding:8px 14px}
+.rolar svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rolar:hover{color:#FF8FB1}
+.catalogo{max-width:1200px;margin:0 auto;padding:56px clamp(16px,4vw,48px) 80px}
+.catalogo h2{font-family:var(--serif);font-weight:400;font-size:2.2rem;margin-bottom:24px}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:28px 20px}
+.card{background:none;border:0;padding:0;text-align:left;color:var(--texto)}
+.card .poster{transition:box-shadow .2s,transform .2s}
+.card:hover .poster,.card.atual .poster{transform:translateY(-4px);box-shadow:0 0 0 2px var(--rosa),0 18px 40px rgba(0,0,0,.5)}
+.card h3{font-size:1rem;font-weight:600;margin-top:10px;line-height:1.25}
+.card small{color:var(--suave)}
 .texto{flex:1;max-width:560px;display:flex;flex-direction:column;align-items:flex-start;gap:14px;animation:entra .45s ease both}
 .saudacao{font-family:var(--serif);font-style:italic;font-size:1.5rem;color:#FF8FB1}
 .eyebrow{font-size:.8rem;letter-spacing:.22em;font-weight:600;color:#FF8FB1}
@@ -59,6 +73,9 @@ padding:clamp(24px,5vw,56px) clamp(16px,5vw,64px);background:radial-gradient(ell
 .item .ano{display:block;margin-top:10px;font-weight:600;font-size:.95rem}
 .item.on .ano{font-weight:800;color:#FF8FB1}
 .central .poster{box-shadow:0 0 0 1px rgba(251,239,244,.14),0 18px 44px rgba(0,0,0,.45)}
+.bilhete{margin-top:16px;padding:6px 0 6px 16px;border-left:3px solid var(--rosa);font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35;color:#F3DDE9;max-width:60ch}
+dialog>.bilhete{display:none;margin-top:18px}
+@media(max-width:720px){dialog>.bilhete:not([hidden]){display:block}}
 .nota-rotulo{display:block;margin-bottom:6px;font-family:var(--ui);font-style:normal;font-size:.75rem;letter-spacing:.2em;font-weight:600;color:#FF8FB1}
 .vazio{color:#C9A6C4}
 @media(max-width:820px){.central{flex-direction:column-reverse;justify-content:flex-start}.texto{max-width:none}}
@@ -82,9 +99,6 @@ background:rgba(30,10,33,.92);backdrop-filter:blur(8px)}
 .fim[hidden]{display:none}
 .fim-msg{font-family:var(--serif);font-size:clamp(1.6rem,4.4vw,3rem);line-height:1.15;max-width:22ch}
 .fim-acoes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.bilhete{margin-top:16px;padding:6px 0 6px 16px;border-left:3px solid var(--rosa);font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35;color:#F3DDE9;max-width:60ch}
-.bilhete[hidden]{display:none}
-dialog>.bilhete{margin-top:18px}
 .logo{height:44px;width:auto;display:block}
 .abertura{position:fixed;inset:0;z-index:100;display:grid;place-items:center;cursor:pointer;
 background:radial-gradient(ellipse at 50% 40%,#3D1640 0%,var(--noite) 70%);transition:opacity .7s}
@@ -104,6 +118,8 @@ background:radial-gradient(ellipse at 50% 40%,#3D1640 0%,var(--noite) 70%);trans
 </header>
 
 <main class="central" id="central"></main>
+
+<section class="catalogo" id="catalogo"><h2>Todos os filmes</h2><div class="grade" id="grade"></div></section>
 
 <dialog id="dlg" aria-labelledby="pTitulo">
   <div class="p-topo">
@@ -269,10 +285,9 @@ function carrossel(){
   t.append(b);
   if(n>1){
     const nav=el("div","nav");
-    nav.append(seta("e","Filme anterior",()=>ir(idx-1,l)));
     const pt=el("div","pontos");
     l.forEach((x,i)=>{const d=el("button",i===idx?"on":"");d.type="button";d.setAttribute("aria-label",x.titulo);d.onclick=()=>{idx=i;carrossel()};pt.append(d)});
-    nav.append(pt,seta("d","Próximo filme",()=>ir(idx+1,l)));
+    nav.append(pt);
     t.append(nav);
   }
 
@@ -288,6 +303,29 @@ function carrossel(){
     col.append(it);
   });
   c.append(t,col);
+  if(n>1){
+    const e=seta("e","Filme anterior",()=>ir(idx-1,l));e.classList.add("fixa","esq");
+    const d=seta("d","Próximo filme",()=>ir(idx+1,l));d.classList.add("fixa","dir");
+    c.append(e,d);
+  }
+  const r=el("button","rolar");r.type="button";
+  r.innerHTML='<span>Todos os filmes</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  r.onclick=()=>$("catalogo").scrollIntoView({behavior:"smooth"});
+  c.append(r);
+  catalogo(l);
+}
+
+function catalogo(l){
+  const g=$("grade");g.innerHTML="";
+  l.forEach((f,i)=>{
+    const b=el("button","card"+(i===idx?" atual":""));b.type="button";
+    const p=poster(f);const pr=pct(f);
+    if(pr>0){const d=el("div","prog");d.innerHTML='<b style="width:'+pr+'%"></b>';p.append(d)}
+    b.append(p,el("h3",null,f.titulo));
+    if(f.ano)b.append(el("small",null,f.ano));
+    b.onclick=()=>{idx=i;carrossel();window.scrollTo({top:0,behavior:"smooth"})};
+    g.append(b);
+  });
 }
 
 let video=null,atual=null,ultimo=0;
@@ -315,9 +353,10 @@ function mostrarFim(){
 function abrir(f){
   atual=f;terminou=false;
   $("pTitulo").textContent=f.titulo;
+  const bl=$("bilheteP");bl.hidden=!f.nota;bl.querySelector(".nota-rotulo").textContent=ROTULO_NOTA;$("bilheteT").textContent=f.nota||"";
   const tela=$("tela");tela.innerHTML="";video=null;
   $("fim").hidden=true;
-  const b=$("bilheteP");b.hidden=!f.nota;b.querySelector(".nota-rotulo").textContent=ROTULO_NOTA;$("bilheteT").textContent=f.nota||"";
+  
   $("dlg").showModal();
   if(!f.driveId||f.driveId.startsWith("COLE_AQUI")){
     tela.innerHTML='<p class="aviso">Falta colocar o ID do Drive deste filme no index.html.</p>';return;
@@ -356,17 +395,21 @@ $("dlg").addEventListener("close",()=>{
 });
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
 $("busca").addEventListener("input",()=>{idx=0;carrossel()});
+new IntersectionObserver(([en])=>document.body.classList.toggle("no-hero",!en.isIntersecting),{threshold:.3}).observe($("central"));
 document.addEventListener("keydown",e=>{
   if($("dlg").open||e.target===$("busca"))return;
   const l=lista();if(l.length<2)return;
   if(e.key==="ArrowLeft")ir(idx-1,l);else if(e.key==="ArrowRight")ir(idx+1,l);
 });
-let x0=null;
-$("central").addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});
+let x0=null,y0=null;
+$("central").addEventListener("touchstart",e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
 $("central").addEventListener("touchend",e=>{
-  if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;
-  const l=lista();if(Math.abs(dx)>50&&l.length>1)ir(idx+(dx<0?1:-1),l);
+  if(x0==null)return;
+  const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=y0=null;
+  const l=lista();
+  if(l.length>1&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*2)ir(idx+(dx<0?1:-1),l);
 });
+$("central").addEventListener("touchcancel",()=>{x0=y0=null});
 
 carrossel();
 
