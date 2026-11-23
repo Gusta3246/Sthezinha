@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#1E0A21">
+<link rel="icon" href="https://i.postimg.cc/rsPJByK9/Emblema-Romantico-Sthezinha-Filmes.png">
+<link rel="apple-touch-icon" href="https://i.postimg.cc/rsPJByK9/Emblema-Romantico-Sthezinha-Filmes.png">
+<meta property="og:title" content="Sthezinha Filmes">
+<meta property="og:image" content="https://i.postimg.cc/rsPJByK9/Emblema-Romantico-Sthezinha-Filmes.png">
 <title>Sthezinha Filmes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,16 +72,41 @@ dialog::backdrop{background:rgba(14,4,16,.88);backdrop-filter:blur(6px)}
 .tela{aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
 .tela video,.tela iframe{width:100%;height:100%;border:0;display:block;background:#000}
 .aviso{padding:28px;color:var(--suave)}
+.p-acoes{display:flex;gap:10px}
+.palco{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.cortina{position:absolute;inset:0;z-index:2;display:flex;overflow:hidden;cursor:pointer}
+.cortina.fora{display:none}
+.pano{flex:1;height:100%;transition:transform 1.7s cubic-bezier(.6,.05,.2,1);
+background:repeating-linear-gradient(90deg,#4A1448 0,#6B2169 22px,#3A0F3A 44px,#4A1448 66px);box-shadow:inset 0 0 60px rgba(0,0,0,.45)}
+.cortina.aberta .pano.e{transform:translateX(-101%)}
+.cortina.aberta .pano.d{transform:translateX(101%)}
+.cortina-titulo{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;pointer-events:none;
+font-family:var(--serif);font-size:clamp(1.8rem,5vw,3.4rem);line-height:1.1;text-shadow:0 2px 18px rgba(0,0,0,.6);transition:opacity .6s}
+.cortina.aberta .cortina-titulo{opacity:0}
+.fim{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:28px;text-align:center;
+background:rgba(30,10,33,.92);backdrop-filter:blur(8px)}
+.fim[hidden]{display:none}
+.fim-msg{font-family:var(--serif);font-size:clamp(1.6rem,4.4vw,3rem);line-height:1.15;max-width:22ch}
+.fim-acoes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.bilhete{margin-top:16px;padding:6px 0 6px 16px;border-left:3px solid var(--rosa);font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35;color:#F3DDE9;max-width:60ch}
+.bilhete[hidden]{display:none}
+dialog>.bilhete{margin-top:18px}
+.saudacao{font-family:var(--serif);font-style:italic;font-size:clamp(1.4rem,3vw,2rem);color:var(--rosa);margin-bottom:10px}
+.logo{height:44px;width:auto;display:block}
+.abertura{position:fixed;inset:0;z-index:100;display:grid;place-items:center;cursor:pointer;
+background:radial-gradient(ellipse at 50% 40%,#3D1640 0%,var(--noite) 70%);transition:opacity .7s}
+.abertura img{width:min(340px,72vw);max-height:60vh;object-fit:contain;animation:entra 1.2s ease both}
+.abertura.some{opacity:0;pointer-events:none}
+@keyframes entra{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
+<div class="abertura" id="abertura" aria-hidden="true"><img src="https://i.postimg.cc/rsPJByK9/Emblema-Romantico-Sthezinha-Filmes.png" alt=""></div>
+
 <header class="topo">
-  <div class="marca">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#FF8FB1"/><path d="M12 9l12 7-12 7z" fill="#1E0A21"/></svg>
-    Sthezinha Filmes
-  </div>
+  <div class="marca"><img class="logo" src="https://i.postimg.cc/rsPJByK9/Emblema-Romantico-Sthezinha-Filmes.png" alt="Sthezinha Filmes" onerror="this.replaceWith(document.createTextNode('Sthezinha Filmes'))"></div>
   <input id="busca" type="search" placeholder="Buscar filme" aria-label="Buscar filme">
 </header>
 
@@ -91,9 +120,26 @@ dialog::backdrop{background:rgba(14,4,16,.88);backdrop-filter:blur(6px)}
 <dialog id="dlg" aria-labelledby="pTitulo">
   <div class="p-topo">
     <h2 id="pTitulo"></h2>
-    <button class="fechar" id="fechar" type="button">Fechar</button>
+    <div class="p-acoes">
+      <button class="fechar" id="terminei" type="button">Terminei</button>
+      <button class="fechar" id="fechar" type="button">Fechar</button>
+    </div>
   </div>
-  <div class="tela" id="tela"></div>
+  <div class="palco">
+    <div class="tela" id="tela"></div>
+    <div class="cortina" id="cortina" aria-hidden="true">
+      <div class="pano e"></div><div class="pano d"></div>
+      <div class="cortina-titulo" id="cortinaTitulo"></div>
+    </div>
+    <div class="fim" id="fim" hidden>
+      <p class="fim-msg" id="fimMsg"></p>
+      <div class="fim-acoes">
+        <button class="btn" id="denovo" type="button">Ver de novo</button>
+        <button class="fechar" id="voltar" type="button">Voltar ao catálogo</button>
+      </div>
+    </div>
+  </div>
+  <p class="bilhete" id="bilheteP" hidden></p>
 </dialog>
 
 <script>
@@ -104,6 +150,12 @@ window.CONFIG = {
   // Preenchida: toca no player do site e lembra onde você parou.
   apiKey: "",
 
+  // Nome que aparece na saudação ("Boa noite, ...").
+  nome: "Sthezinha",
+
+  // Mensagem da tela de fim, quando o filme não tem a sua própria (campo fim).
+  fimPadrao: "Fim. Foi uma ótima sessão.",
+
   // Para adicionar outro filme, copie um bloco { ... } e separe por vírgula.
   // player: "drive" força o player do Drive (use em .mkv). chave: resourcekey do link, se houver.
   filmes: [
@@ -113,6 +165,8 @@ window.CONFIG = {
       duracao: "2h 9min",
       sinopse: "Na Inglaterra do século XIX, a decidida Elizabeth Bennet conhece o reservado Sr. Darcy, e os dois precisam vencer o orgulho e os preconceitos que os mantêm distantes.",
       capa: "https://i.postimg.cc/y85BY0Sc/e47c87e8f8d0f8c752c81444e9b6cb7e-2970105409.jpg",
+      nota: "Escolhi esse porque literalmente eu tinha preconceito com filmes de época, mas confesso que esse é um filme bem legal de um romance improvável. Me identifiquei com o Darcy.",   // aparece antes e durante o filme
+      fim: "",                                               // mensagem da tela de fim (vazio usa a padrão)
       driveId: "185blROfFpOWduXCxe-9QEBLYtSFvn9PL",
       player: "drive",   // arquivo .mkv: o navegador não toca, então usa o player do Drive
       destaque: true
@@ -123,8 +177,21 @@ window.CONFIG = {
       duracao: "1h 49min",
       sinopse: "Jesse e Céline, agora casados e com duas filhas, passam as férias na Grécia, e uma noite de conversas coloca o relacionamento à prova.",
       capa: "https://i.postimg.cc/sg1srT14/21012323-20130613143708915-1653446488.jpg",
+      nota: "Esse é o último de uma trilogia... baseado em uma história real de amor. De um homem que viajou e encontrou uma mulher e eles foram se conhecendo... O filme é literalmente eles andando e conversando... O primeiro se passa quando eles são bem jovens, o segundo quando eles são adultos e o terceiro quando eles já são mais velhos, e o legal é que são os mesmos atores, então vamos acompanhando a idade deles na vida real.",
+      fim: "",
       driveId: "0B6G2qyZ9G8kOTW1Nei1Rb1FaNVk",
       chave: "0-oav9NsMQeKNheb2dVKuwDQ",   // resourcekey do link (arquivos mais antigos do Drive)
+      player: "drive"
+    },
+    {
+      titulo: "A Odisseia",
+      ano: "2026",
+      duracao: "2h 53min",
+      sinopse: "Adaptação do poema de Homero por Christopher Nolan: depois da Guerra de Troia, Odisseu enfrenta anos de perigos no mar tentando voltar para casa.",
+      capa: "https://i.postimg.cc/Hkfw0PyW/mu-Mw-JAi-Mt-Re-EHLKp-KMWt2r-Mk-YF7-1572338569.jpg",
+      nota: "Respiro fundo e o coração dispara quando lhe vejo.",
+      fim: "",
+      driveId: "17yjRYBikmkD7YmkDpWclalahe-QqpCYP",
       player: "drive"
     }
   ]
@@ -132,7 +199,7 @@ window.CONFIG = {
 // ==============================================
 </script>
 <script>
-const {apiKey="",filmes=[]}=window.CONFIG||{};
+const {apiKey="",filmes=[],nome="",fimPadrao="Fim. Foi uma ótima sessão."}=window.CONFIG||{};
 const $=id=>document.getElementById(id);
 const PLAY='<svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>';
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
@@ -147,6 +214,12 @@ function poster(f){
   img.onload=()=>{sem.remove();el.prepend(img)};
   if(f.capa)img.src=f.capa;
   return el;
+}
+
+function saudacao(){
+  const h=new Date().getHours();
+  const periodo=h>=5&&h<12?"Bom dia":h>=12&&h<18?"Boa tarde":"Boa noite";
+  return nome?periodo+", "+nome:periodo;
 }
 
 function hero(){
@@ -167,7 +240,11 @@ function hero(){
   b.innerHTML=PLAY+"<span></span>";
   b.lastChild.textContent=pct(f)>0?"Continuar":"Assistir";
   b.onclick=()=>abrir(f);
-  ac.append(b);txt.append(t,meta,sin,ac);
+  ac.append(b);
+  const sau=document.createElement("p");sau.className="saudacao";sau.textContent=saudacao();
+  txt.append(sau,t,meta,sin);
+  if(f.nota){const n=document.createElement("p");n.className="bilhete";n.textContent=f.nota;txt.append(n)}
+  txt.append(ac);
   inn.append(txt,poster(f));
   h.append(fundo,inn);
 }
@@ -202,38 +279,85 @@ function usarIframe(f){
   tela.append(i);
 }
 
+const reduz=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let terminou=false,timer=null;
+const limparProg=id=>{try{localStorage.removeItem("prog:"+id)}catch{}};
+
+function mostrarFim(){
+  if(!atual)return;
+  terminou=true;limparProg(atual.driveId);
+  $("fimMsg").textContent=atual.fim||fimPadrao;
+  $("fim").hidden=false;
+  if(video)video.pause();
+}
+
+function abrirCortina(){
+  clearTimeout(timer);
+  const c=$("cortina");
+  if(c.classList.contains("aberta")||c.classList.contains("fora"))return;
+  c.classList.add("aberta");
+  const depois=()=>{c.classList.add("fora");if(video)video.play().catch(()=>{})};
+  if(reduz)depois();else timer=setTimeout(depois,1800);
+}
+
 function abrir(f){
-  atual=f;$("pTitulo").textContent=f.titulo;
+  atual=f;terminou=false;
+  $("pTitulo").textContent=f.titulo;
   const tela=$("tela");tela.innerHTML="";video=null;
+  $("fim").hidden=true;
+  const c=$("cortina");c.classList.remove("aberta","fora");
+  $("cortinaTitulo").textContent=f.titulo;
+  const b=$("bilheteP");b.hidden=!f.nota;b.textContent=f.nota||"";
+  clearTimeout(timer);
   $("dlg").showModal();
   if(!f.driveId||f.driveId.startsWith("COLE_AQUI")){
+    c.classList.add("fora");
     tela.innerHTML='<p class="aviso">Falta colocar o ID do Drive deste filme no index.html.</p>';return;
   }
-  if(!apiKey||f.player==="drive"){usarIframe(f);return}
-  const v=document.createElement("video");
-  v.controls=true;v.autoplay=true;v.playsInline=true;v.preload="metadata";
-  v.src="https://www.googleapis.com/drive/v3/files/"+encodeURIComponent(f.driveId)+"?alt=media&key="+encodeURIComponent(apiKey);
-  v.addEventListener("loadedmetadata",()=>{
-    const p=lerProg(f.driveId);
-    if(p&&p.t>10&&p.t<v.duration-30)v.currentTime=p.t;
-  });
-  v.addEventListener("timeupdate",()=>{
-    const n=Date.now();
-    if(n-ultimo>4000){ultimo=n;salvarProg(f.driveId,v.currentTime,v.duration)}
-  });
-  v.addEventListener("error",()=>usarIframe(f));
-  tela.append(v);video=v;
+  if(!apiKey||f.player==="drive")usarIframe(f);
+  else{
+    const v=document.createElement("video");
+    v.controls=true;v.playsInline=true;v.preload="metadata";
+    v.src="https://www.googleapis.com/drive/v3/files/"+encodeURIComponent(f.driveId)+"?alt=media&key="+encodeURIComponent(apiKey);
+    v.addEventListener("loadedmetadata",()=>{
+      const p=lerProg(f.driveId);
+      if(p&&p.t>10&&p.t<v.duration-30)v.currentTime=p.t;
+    });
+    v.addEventListener("timeupdate",()=>{
+      const n=Date.now();
+      if(n-ultimo>4000){ultimo=n;salvarProg(f.driveId,v.currentTime,v.duration)}
+    });
+    v.addEventListener("ended",mostrarFim);
+    v.addEventListener("error",()=>usarIframe(f));
+    tela.append(v);video=v;
+  }
+  timer=setTimeout(abrirCortina,reduz?0:1600);
 }
 
 $("fechar").onclick=()=>$("dlg").close();
+$("voltar").onclick=()=>$("dlg").close();
+$("terminei").onclick=mostrarFim;
+$("denovo").onclick=()=>{
+  terminou=false;$("fim").hidden=true;
+  if(video){video.currentTime=0;video.play().catch(()=>{})}
+  else if(atual)usarIframe(atual);
+};
+$("cortina").addEventListener("click",abrirCortina);
 $("dlg").addEventListener("close",()=>{
-  if(video&&atual&&video.duration)salvarProg(atual.driveId,video.currentTime,video.duration);
+  clearTimeout(timer);
+  if(video&&atual&&video.duration&&!terminou)salvarProg(atual.driveId,video.currentTime,video.duration);
   $("tela").innerHTML="";video=null;hero();desenhar();
 });
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
 $("busca").addEventListener("input",desenhar);
 
 hero();desenhar();
+
+const ab=$("abertura");
+const fecharAbertura=()=>{ab.classList.add("some");setTimeout(()=>ab.remove(),800)};
+ab.querySelector("img").addEventListener("error",()=>ab.remove());
+if(reduz)ab.remove();
+else{setTimeout(fecharAbertura,2400);ab.addEventListener("click",fecharAbertura)}
 </script>
 </body>
 </html>
